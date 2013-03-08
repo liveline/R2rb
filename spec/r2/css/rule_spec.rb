@@ -1,27 +1,28 @@
 require 'r2/css/rule'
 
 describe R2::CSS::Rule do
+  let(:stylesheet) { double("stylesheet") }
   subject(:rule) { R2::CSS::Rule }
 
   describe ".new" do
 
     it "should raise InvalidRule when sent nil" do
-      expect { rule.new(nil) }.to raise_error(R2::CSS::Rule::InvalidRule, "css argument can't be nil")
+      expect { rule.new(stylesheet, nil) }.to raise_error(R2::CSS::Rule::InvalidRule, "css argument can't be nil")
     end
 
     it "should raise InvalidRule when sent invalid css" do
-      expect { rule.new("not a rule") }.to raise_error(R2::CSS::Rule::InvalidRule, 'css argument "not a rule" does not appear to be a valid CSS rule')
+      expect { rule.new(stylesheet, "not a rule") }.to raise_error(R2::CSS::Rule::InvalidRule, 'css argument "not a rule" does not appear to be a valid CSS rule')
     end
 
     it "should return Rule instance when sent valid css" do
-      rule.new("html{direction:rtl;}").should be_instance_of R2::CSS::Rule
+      rule.new(stylesheet, "html{direction:rtl;}").should be_instance_of R2::CSS::Rule
     end
 
   end
 
   describe "instance" do
     let(:css) { "html{direction:ltr;margin-left:10px;}" }
-    subject(:rule) { R2::CSS::Rule.new(css) }
+    subject(:rule) { R2::CSS::Rule.new(stylesheet, css) }
 
     its(:css) { should == css }
 

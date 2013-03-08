@@ -8,9 +8,10 @@ module R2
 
       SELECTOR_DECLARATION_REGEXP = /([^\{]+)\{([^\}]+)/
 
-      attr_reader :css, :selector, :declarations
+      attr_reader :stylesheet, :css, :selector, :declarations
 
-      def initialize(css)
+      def initialize(stylesheet, css)
+        @stylesheet   = stylesheet
         @declarations = []
         self.css = css
       end
@@ -24,7 +25,7 @@ module R2
           declarations = match[2]
 
           declarations.split(/;(?!base64)/).each do |declaration|
-            @declarations << R2::CSS::Declaration.new(declaration)
+            @declarations << R2::CSS::Declaration.new(self, declaration)
           end
         else
           raise InvalidRule, "css argument \"#{css}\" does not appear to be a valid CSS rule"

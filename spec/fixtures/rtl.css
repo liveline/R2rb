@@ -4,4 +4,5 @@ html {
 body {
   text-align: right;
   margin: 0 20px 0 0;
+  background-image: url('image-rtl.png');
 }

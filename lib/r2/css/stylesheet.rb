@@ -8,9 +8,10 @@ module R2
 
       RULE_REGEXP = /([^\{]+\{[^\}]+\})+?/
 
-      attr_reader :css, :rules
+      attr_reader :translators, :css, :rules
 
-      def initialize(css)
+      def initialize(css, options = {})
+        @translators = [*options[:translators]].compact
         @rules   = []
         self.css = css
       end
@@ -19,7 +20,7 @@ module R2
         raise InvalidStylesheet, "css argument can't be nil" unless css
         @css = css
         minimize(@css).gsub(RULE_REGEXP) do |rule|
-          @rules << R2::CSS::Rule.new(rule)
+          @rules << R2::CSS::Rule.new(self, rule)
         end
         raise InvalidStylesheet, "no CSS rules found" if @rules.empty?
       end

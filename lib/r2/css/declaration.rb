@@ -4,6 +4,8 @@ module R2
 
       class InvalidDeclaration < ArgumentError; end
 
+      extend Forwardable
+
       PROPERTY_VALUE_REGEXP = /([^:]+):(.+)$/
 
       PROPERTY_MAP = {
@@ -54,9 +56,11 @@ module R2
         'background-position' => lambda {|obj,val| obj.background_position_swap(val) }
       }
 
-      attr_reader :css, :property, :value
+      attr_reader :rule, :css, :property, :value
+      def_delegators :@rule, :stylesheet
 
-      def initialize(css)
+      def initialize(rule, css)
+        @rule    = rule
         self.css = css
       end
 
@@ -81,6 +85,10 @@ module R2
       def flip
         @property = PROPERTY_MAP[@property] if PROPERTY_MAP.has_key?(@property)
         @value = VALUE_PROCS[@property].call(self, value) if VALUE_PROCS.has_key?(@property)
+
+        stylesheet.translators.each do |translator|
+          @value = translator.transform(@value)
+        end
       end
 
       # Given a value of <tt>rtl</tt> or <tt>ltr</tt> return the opposing value. All other arguments are ignored and returned unmolested.

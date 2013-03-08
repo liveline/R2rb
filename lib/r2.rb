@@ -1,4 +1,5 @@
 require 'r2/css/stylesheet'
+require 'r2/translator'
 
 # Change the directionality of a block of CSS code from right-to-left to left-to-right. This includes not only
 # altering the <tt>direction</tt> attribute but also altering the 4-argument version of things like <tt>padding</tt>
@@ -10,8 +11,8 @@ require 'r2/css/stylesheet'
 module R2
 
   # Short cut method for providing a one-time CSS change
-  def self.r2(css)
-    CSS::Stylesheet.new(css).flip
+  def self.r2(*args)
+    CSS::Stylesheet.new(*args).flip
   end
 
 end

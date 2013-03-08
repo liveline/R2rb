@@ -4,4 +4,5 @@ html {
 body {
   text-align: left;
   margin: 0 0 0 20px;
+  background-image: url('image-ltr.png');
 }
