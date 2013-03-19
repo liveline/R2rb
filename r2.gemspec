@@ -14,6 +14,8 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "r2"
 
+  s.add_dependency('docile', '~> 1.0')
+
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 2.13.0'
 

@@ -24,7 +24,7 @@ describe R2::CSS::Rule do
     let(:css) { "html{direction:ltr;margin-left:10px;}" }
     subject(:rule) { R2::CSS::Rule.new(stylesheet, css) }
 
-    its(:css) { should == css }
+    its(:css) { should == "html {\n  direction: ltr;\n  margin-left: 10px;\n}" }
 
     its(:selector) { should == "html" }
 

@@ -8,14 +8,18 @@ module R2
 
       RULE_REGEXP = /([^\{]+\{[^\}]+\})+?/
 
-      attr_reader :translators, :css, :rules
+      attr_reader :translations, :rules
 
-      def initialize(css, options = {})
-        @translators = [*options[:translators]].compact
+      # Instantiate a new Stylesheet instance from the supplied css
+      # @param [String] css the source css
+      # @return [R2::CSS::Stylesheet] a Stylesheet instance
+      def initialize(css)
         @rules   = []
         self.css = css
       end
 
+      # Parse css into Array of Rule instances
+      # @param [String] css the source css
       def css=(css)
         raise InvalidStylesheet, "css argument can't be nil" unless css
         @css = css
@@ -25,7 +29,15 @@ module R2
         raise InvalidStylesheet, "no CSS rules found" if @rules.empty?
       end
 
-      # Minimize the provided CSS by removing comments, and extra specs
+      # css for this Stylesheet
+      # @return [String] css
+      def css
+        rules.map(&:to_s).join("\n") + "\n"
+      end
+      alias_method :to_s, :css
+
+      # Minimize the provided CSS by removing comments, and extra spaces
+      # @param [String] css the source css
       def minimize(css)
         return '' unless css
 
@@ -36,13 +48,14 @@ module R2
       end
       private :minimize
 
-      def flip
-        @rules.map(&:flip)
-        to_s
-      end
-
-      def to_s
-        rules.map(&:to_s).join("\n") + "\n"
+      # Translate the stylesheet
+      # @param [Array<R2::Translation>] translations an Array of translations to apply to the stylesheet
+      # @return [R2::CSS::Stylesheet] the translated Stylesheet instance
+      def translate(translations)
+        @rules.map do |rule|
+          rule.translate(translations)
+        end
+        self
       end
 
     end

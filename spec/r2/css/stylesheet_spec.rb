@@ -2,9 +2,6 @@ require 'r2/css/stylesheet'
 
 describe R2::CSS::Stylesheet do
   let(:css_ltr) { File.read("spec/fixtures/ltr.css") }
-  let(:matcher) { /url[\s]*\([\s]*([^\)]*)[\s]*\)[\s]*/ }
-  let(:handler) { Proc.new {|value, url| value.gsub('-ltr.', '-rtl.')} }
-  let(:translator) { R2::Translator.new(matcher, handler) }
   subject(:stylesheet) { R2::CSS::Stylesheet }
 
   describe ".new" do
@@ -19,16 +16,6 @@ describe R2::CSS::Stylesheet do
 
     it "should return Stylesheet instance when sent valid css" do
       stylesheet.new(css_ltr).should be_instance_of R2::CSS::Stylesheet
-    end
-
-    context "with translators instance" do
-      subject { stylesheet.new(css_ltr, :translators => translator) }
-      its(:translators) { should eq([translator]) }
-    end
-
-    context "with translators array" do
-      subject { stylesheet.new(css_ltr, :translators => [translator]) }
-      its(:translators) { should eq([translator]) }
     end
 
   end
@@ -57,6 +44,15 @@ describe R2::CSS::Stylesheet do
           end
         end
 
+      end
+
+    end
+
+    describe "#translate" do
+      let(:translations) do
+        R2::Translation.new(:value => /url[\s]*\([\s]*([^\)]*)[\s]*\)[\s]*/) do
+          value.gsub('-ltr.', '-rtl.')
+        end
       end
 
     end

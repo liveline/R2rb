@@ -1,0 +1,12 @@
+body {
+  background-color: gray;
+  color: white;
+}
+h1 {
+  background-image: url("/images/burger.jpg");
+}
+p {
+  background-color: white;
+  color: gray;
+  z-index: 1;
+}

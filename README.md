@@ -1,6 +1,8 @@
-## R2
+# R2
 
-Library for swapping CSS values for right-to-left display. A direct Ruby port of the Javascript/Node project at https://github.com/ded/R2.
+A ruby library for making arbitrary translations to CSS stylesheets. Its primary use case is creating mirror-images of stylesheets for use with [right-to-left languages](http://en.wikipedia.org/wiki/Right-to-left) like Arabic or Hebrew.
+
+Originally inspired by the Javascript/Node [R2](https://github.com/ded/R2) project.
 
 ## Installation
 
@@ -8,14 +10,53 @@ Library for swapping CSS values for right-to-left display. A direct Ruby port of
 
 ## Usage
 
+### Convert a stylesheet to right-to-left
+
 You can use the handy static method for flipping any CSS string via:
 
-    > R2.r2("/* Comment */\nbody { direction: rtl; }")
-    #=> "body{direction:ltr;}"
+```ruby
+> R2.r2("body { direction: rtl; }")
+#=> "body { direction: ltr; }"
+```
 
-## Reporting bugs
+### Apply arbitrary translations to a stylesheet
 
-Report bugs in the github project at http://github.com/mzsanford/r2rb
+R2 also provides a simple DSL for defining your own custom translations:
+
+```ruby
+# Convert to the Queen's CSS
+R2.translate(css) do
+
+  match :property => /\bcolor\b/ do
+    property.gsub!('color', 'colour')
+  end
+
+  match :property => /\bz-index\b/ do
+    property.gsub!('z-index', 's-index')
+  end
+
+  match :value => /\bgray\b/ do
+    value.gsub!('gray', 'grey')
+  end
+
+  match :value => /url[\s]*\([\s]*([^\)]*)[\s]*\)[\s]*/ do
+    value.gsub!('burger.jpg', 'nice-cup-of-tea.jpg')
+  end
+
+end
+```
+
+### Mix and match
+`R2.r2` will also accept a block allowing you to define additional translations:
+
+```ruby
+# Convert a stylesheet to RTL and convert any urls containing `-ltr.png` to `-rtl.png`
+R2.r2(css) do
+  match :value => /url[\s]*\([\s]*([^\)]*)[\s]*\)[\s]*/ do
+    value.gsub!('-ltr.png', '-rtl.png')
+  end
+end
+```
 
 ## Change Log
 

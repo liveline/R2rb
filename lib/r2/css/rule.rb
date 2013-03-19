@@ -8,14 +8,19 @@ module R2
 
       SELECTOR_DECLARATION_REGEXP = /([^\{]+)\{([^\}]+)/
 
-      attr_reader :stylesheet, :css, :selector, :declarations
+      attr_reader :stylesheet, :selector, :declarations
 
+      # Create a new Rule instance
+      # @param [R2::CSS:Stylesheet] stylesheet the parent Stylesheet for this Rule
+      # @param [String] css the css for this Rule
       def initialize(stylesheet, css)
         @stylesheet   = stylesheet
         @declarations = []
         self.css = css
       end
 
+      # Parse css into Array of Declaration instances
+      # @param [String] css the source css
       def css=(css)
         raise InvalidRule, "css argument can't be nil" unless css
         @css = css
@@ -32,14 +37,25 @@ module R2
         end
       end
 
-      def flip
-        @declarations.map(&:flip)
-      end
-
-      def to_s
+      # css for this Rule
+      # @return [String] css
+      def css
         "#{@selector} {\n" +
           declarations.map{ |declaration| "  #{declaration}" }.join("\n") +
         "\n}"
+      end
+      alias_method :to_s, :css
+
+      # Translate rule declarations
+      # @param [Array<R2::Translation>] translations Array of Translations to apply to Declarations
+      def translate(translations)
+        return unless translations && !translations.empty?
+        @declarations.map do |declaration|
+          translations.each do |translation|
+            declaration = translation.translate(declaration)
+          end
+          declaration
+        end
       end
 
     end

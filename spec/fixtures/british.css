@@ -1,0 +1,12 @@
+body {
+  background-colour: grey;
+  colour: white;
+}
+h1 {
+  background-image: url("/images/nice-cup-of-tea.jpg");
+}
+p {
+  background-colour: white;
+  colour: grey;
+  s-index: 1;
+}

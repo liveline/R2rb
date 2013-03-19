@@ -1,18 +1,58 @@
 require 'r2/css/stylesheet'
-require 'r2/translator'
+require 'r2/translations_builder'
+require 'r2/translators'
 
-# Change the directionality of a block of CSS code from right-to-left to left-to-right. This includes not only
-# altering the <tt>direction</tt> attribute but also altering the 4-argument version of things like <tt>padding</tt>
-# to correctly reflect the change. CSS is also minified, in part to make the processing easier.
+# Convert a block of CSS using arbitrary translations
 #
 # Author::    Matt Sanford  (mailto:matt@twitter.com)
 # Copyright:: Copyright (c) 2011 Twitter, Inc.
 # License::   Licensed under the Apache License, Version 2.0
 module R2
 
-  # Short cut method for providing a one-time CSS change
-  def self.r2(*args)
-    CSS::Stylesheet.new(*args).flip
+  RTL_TRANSLATIONS = Proc.new {
+
+    # Property left|right swap
+    match :property => /\b(left|right)\b/ do
+      property.gsub!(property, Translators.side_swap(property))
+    end
+
+    # Direction swap
+    match :property => /^direction$/ do
+      value.gsub!(value, Translators.direction_swap(value))
+    end
+
+    # Side swap
+    match :property => /^(text-align|float|clear)$/ do
+      value.gsub!(value, Translators.side_swap(value))
+    end
+
+    # Edge swap
+    match :property => /(margin|padding|box-shadow)$/ do
+      value.gsub!(value, Translators.edge_swap(value))
+    end
+
+    # Corner swap
+    match :property => /border-radius$/ do
+      value.gsub!(value, Translators.corner_swap(value))
+    end
+
+    # Position swap
+    match :property => /^background-position$/ do
+      value.gsub!(value, Translators.position_swap(value))
+    end
+  }
+
+  # Convert css using supplied translations
+  def self.translate(css, &block)
+    translations = TranslationsBuilder.compile(&block) if block_given?
+    CSS::Stylesheet.new(css).translate(translations)
+  end
+
+  # Convert css from LTR to RTL and apply optional translations
+  def self.r2(css, &block)
+    translations  = TranslationsBuilder.compile(&RTL_TRANSLATIONS)
+    translations += TranslationsBuilder.compile(&block) if block_given?
+    CSS::Stylesheet.new(css).translate(translations)
   end
 
 end
