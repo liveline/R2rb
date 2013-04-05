@@ -44,6 +44,16 @@ describe R2::Translators do
     end
   end
 
+  describe ".offset_swap" do
+    it "should swap a positive value" do
+      R2::Translators.offset_swap("5px 1px 2px 3px black inset").should == "-5px 1px 2px 3px black inset"
+    end
+
+    it "should skip a pair value" do
+      R2::Translators.offset_swap("-5px 1px 2px 3px black inset").should == "5px 1px 2px 3px black inset"
+    end
+  end
+
   describe ".corner_swap" do
     it "should swap a quad value" do
       R2::Translators.corner_swap("1px 2px 3px 4px").should == "2px 1px 4px 3px"

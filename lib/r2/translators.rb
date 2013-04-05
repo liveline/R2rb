@@ -47,6 +47,20 @@ module R2::Translators
     end
   end
 
+  # Converts offset declaration value (like that of <tt>box-shadow</tt>) to its horizontally opposing value
+  # @param [String] val value to swap
+  # @return [String] horizontally swapped value, or original value if argument is unrecognised
+  #
+  # @example
+  #     offset_swap("5px 1px 2px 3px black inset") => "-5px 1px 2px 3px black inset"
+  def self.offset_swap(val)
+    values = val.to_s.split(/\s+/)
+    if !values[0].gsub!(/^-/, '')
+      values[0] = "-#{values[0]}"
+    end
+    values.join(' ')
+  end
+
   # Converts 2, 3 or 4-argument corner declaration value (like that of <tt>border-radius</tt> ) to its horizontally opposing value.
   # Values with vertical radius, specified with a <tt>/</tt> are left alone.
   # @param [String] val value to swap

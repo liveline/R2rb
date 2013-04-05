@@ -27,8 +27,13 @@ module R2
     end
 
     # Edge swap
-    match :property => /(margin|padding|box-shadow)$/ do
+    match :property => /(margin|padding)$/ do
       value.gsub!(value, Translators.edge_swap(value))
+    end
+
+    # Offset swap
+    match :property => /^box-shadow$/ do
+      value.gsub!(value, Translators.offset_swap(value))
     end
 
     # Corner swap
